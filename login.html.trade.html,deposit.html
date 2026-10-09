@@ -1,0 +1,1148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ttnBINNARY · Realistic Trading UI</title>
+  <!-- Font & Icons -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background-color: #0b0e14;
+      color: #e9edf5;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      padding: 20px;
+      letter-spacing: -0.01em;
+    }
+
+    /* APP CONTAINER — realistic trading dashboard */
+    .app-container {
+      max-width: 1440px;
+      width: 100%;
+      background: #131a24;
+      border-radius: 32px;
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.8), 0 0 0 1px rgba(255, 255, 255, 0.03);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      backdrop-filter: blur(2px);
+    }
+
+    /* ========== HEADER ========== */
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 16px 24px;
+      background: #0f151e;
+      border-bottom: 1px solid #1f2a37;
+    }
+
+    .logo-area {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .logo-icon {
+      background: linear-gradient(145deg, #2962ff, #1e4bd8);
+      width: 36px;
+      height: 36px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+      font-weight: 700;
+      color: white;
+      box-shadow: 0 6px 12px -4px rgba(41, 98, 255, 0.4);
+    }
+
+    .logo-text {
+      font-weight: 700;
+      font-size: 18px;
+      letter-spacing: -0.02em;
+      background: linear-gradient(135deg, #ffffff, #b0c4de);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .search-bar {
+      display: flex;
+      align-items: center;
+      background: #1a2330;
+      border-radius: 40px;
+      padding: 8px 16px;
+      width: 300px;
+      border: 1px solid #253141;
+    }
+
+    .search-bar i {
+      color: #6b7b8f;
+      font-size: 14px;
+      margin-right: 8px;
+    }
+
+    .search-bar input {
+      background: transparent;
+      border: none;
+      outline: none;
+      color: #e9edf5;
+      font-size: 14px;
+      width: 100%;
+      font-weight: 400;
+    }
+
+    .search-bar input::placeholder {
+      color: #5e6e82;
+      font-weight: 400;
+    }
+
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+    }
+
+    .balance-chip {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      background: #1a2330;
+      padding: 6px 14px 6px 12px;
+      border-radius: 30px;
+      border: 1px solid #253141;
+    }
+
+    .balance-chip .label {
+      font-size: 13px;
+      color: #8b9bb0;
+      font-weight: 500;
+    }
+
+    .balance-chip .amount {
+      font-weight: 700;
+      color: white;
+      font-size: 15px;
+    }
+
+    .balance-chip .amount small {
+      font-size: 12px;
+      font-weight: 500;
+      color: #34c77b;
+      margin-left: 6px;
+    }
+
+    .avatar {
+      width: 38px;
+      height: 38px;
+      background: linear-gradient(135deg, #2b3b4e, #1f2c3a);
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 600;
+      color: #9ab3d1;
+      border: 1px solid #31465e;
+      font-size: 15px;
+      cursor: pointer;
+    }
+
+    /* ========== MAIN LAYOUT ========== */
+    .main-grid {
+      display: grid;
+      grid-template-columns: 1fr 360px;
+      gap: 16px;
+      padding: 16px 20px 20px 20px;
+      background: #0b0e14;
+    }
+
+    /* LEFT PANEL — chart + positions */
+    .left-panel {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    /* Chart card */
+    .chart-card {
+      background: #131a24;
+      border-radius: 20px;
+      border: 1px solid #1f2a37;
+      overflow: hidden;
+      box-shadow: 0 6px 14px rgba(0, 0, 0, 0.3);
+    }
+
+    .chart-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 14px 18px;
+      background: #10171f;
+      border-bottom: 1px solid #1f2a37;
+    }
+
+    .pair-info {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .pair-icon {
+      background: #1e2a38;
+      width: 34px;
+      height: 34px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #f0b90b;
+      font-weight: 700;
+      font-size: 16px;
+    }
+
+    .pair-name {
+      font-weight: 700;
+      font-size: 18px;
+      letter-spacing: -0.01em;
+    }
+
+    .pair-name span {
+      font-size: 13px;
+      font-weight: 500;
+      color: #6b7b8f;
+      margin-left: 8px;
+    }
+
+    .price-badge {
+      display: flex;
+      align-items: baseline;
+      gap: 10px;
+      background: #1a2330;
+      padding: 6px 16px;
+      border-radius: 24px;
+      border: 1px solid #253141;
+    }
+
+    .price-badge .price {
+      font-size: 20px;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+    }
+
+    .price-badge .change {
+      font-size: 13px;
+      font-weight: 600;
+      color: #34c77b;
+    }
+
+    .chart-tabs {
+      display: flex;
+      gap: 6px;
+      background: #1a2330;
+      padding: 4px;
+      border-radius: 14px;
+    }
+
+    .chart-tab {
+      padding: 6px 14px;
+      font-size: 13px;
+      font-weight: 500;
+      border-radius: 10px;
+      color: #8b9bb0;
+      cursor: pointer;
+      transition: all 0.15s ease;
+      background: transparent;
+      border: none;
+    }
+
+    .chart-tab.active {
+      background: #2962ff;
+      color: white;
+      font-weight: 600;
+      box-shadow: 0 4px 10px rgba(41, 98, 255, 0.3);
+    }
+
+    .chart-area {
+      padding: 12px 12px 0 12px;
+      position: relative;
+    }
+
+    /* canvas chart */
+    #chartCanvas {
+      width: 100%;
+      height: 240px;
+      display: block;
+      border-radius: 12px;
+      background: #10171f;
+    }
+
+    /* stats row */
+    .market-stats {
+      display: flex;
+      justify-content: space-between;
+      padding: 12px 18px 16px 18px;
+      gap: 20px;
+      flex-wrap: wrap;
+      border-top: 1px solid #1a2330;
+    }
+
+    .stat-item {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .stat-label {
+      font-size: 12px;
+      color: #6b7b8f;
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 0.03em;
+    }
+
+    .stat-value {
+      font-weight: 600;
+      font-size: 15px;
+    }
+
+    .stat-value.up {
+      color: #34c77b;
+    }
+
+    .stat-value.down {
+      color: #f6465d;
+    }
+
+    /* Positions table card */
+    .positions-card {
+      background: #131a24;
+      border-radius: 20px;
+      border: 1px solid #1f2a37;
+      overflow: hidden;
+      box-shadow: 0 6px 14px rgba(0, 0, 0, 0.3);
+    }
+
+    .card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 16px 18px;
+      background: #10171f;
+      border-bottom: 1px solid #1f2a37;
+    }
+
+    .card-header h3 {
+      font-size: 15px;
+      font-weight: 600;
+      color: #e9edf5;
+      letter-spacing: -0.01em;
+    }
+
+    .card-header .badge {
+      background: #1e2a38;
+      padding: 4px 10px;
+      border-radius: 20px;
+      font-size: 12px;
+      color: #8b9bb0;
+      font-weight: 500;
+    }
+
+    .positions-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13.5px;
+    }
+
+    .positions-table th {
+      text-align: left;
+      padding: 10px 18px;
+      color: #6b7b8f;
+      font-weight: 500;
+      font-size: 12px;
+      letter-spacing: 0.03em;
+      text-transform: uppercase;
+      background: #0f151e;
+      border-bottom: 1px solid #1f2a37;
+    }
+
+    .positions-table td {
+      padding: 14px 18px;
+      border-bottom: 1px solid #1a2330;
+      font-weight: 500;
+    }
+
+    .positions-table tr:last-child td {
+      border-bottom: none;
+    }
+
+    .positions-table .pair {
+      font-weight: 600;
+      color: white;
+    }
+
+    .positions-table .long {
+      color: #34c77b;
+      font-weight: 600;
+    }
+
+    .positions-table .short {
+      color: #f6465d;
+      font-weight: 600;
+    }
+
+    .pnl-up {
+      color: #34c77b;
+      font-weight: 600;
+    }
+
+    .pnl-down {
+      color: #f6465d;
+      font-weight: 600;
+    }
+
+    .action-btn {
+      background: #1e2a38;
+      border: none;
+      color: #b0c4de;
+      padding: 5px 10px;
+      border-radius: 8px;
+      font-size: 12px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+
+    .action-btn:hover {
+      background: #2962ff;
+      color: white;
+    }
+
+    /* RIGHT PANEL — order form & watchlist */
+    .right-panel {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .order-card {
+      background: #131a24;
+      border-radius: 20px;
+      border: 1px solid #1f2a37;
+      overflow: hidden;
+      box-shadow: 0 6px 14px rgba(0, 0, 0, 0.3);
+    }
+
+    .order-tabs {
+      display: flex;
+      border-bottom: 1px solid #1f2a37;
+      background: #10171f;
+    }
+
+    .order-tab {
+      flex: 1;
+      padding: 14px 0;
+      text-align: center;
+      font-size: 14px;
+      font-weight: 600;
+      color: #6b7b8f;
+      cursor: pointer;
+      transition: 0.15s;
+      border-bottom: 2px solid transparent;
+      background: transparent;
+      border: none;
+      font-family: inherit;
+    }
+
+    .order-tab.active {
+      color: #34c77b;
+      border-bottom-color: #34c77b;
+      background: #0f151e;
+    }
+
+    .order-tab.sell.active {
+      color: #f6465d;
+      border-bottom-color: #f6465d;
+    }
+
+    .order-form {
+      padding: 20px 18px 18px 18px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .input-group {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .input-group label {
+      font-size: 12px;
+      color: #8b9bb0;
+      font-weight: 500;
+      letter-spacing: 0.02em;
+      display: flex;
+      justify-content: space-between;
+    }
+
+    .input-group label span {
+      color: #b0c4de;
+      font-weight: 600;
+    }
+
+    .input-wrapper {
+      display: flex;
+      align-items: center;
+      background: #1a2330;
+      border: 1px solid #253141;
+      border-radius: 12px;
+      padding: 0 14px;
+      transition: border 0.15s;
+    }
+
+    .input-wrapper:focus-within {
+      border-color: #2962ff;
+      box-shadow: 0 0 0 3px rgba(41, 98, 255, 0.15);
+    }
+
+    .input-wrapper input {
+      background: transparent;
+      border: none;
+      outline: none;
+      color: white;
+      font-size: 16px;
+      font-weight: 600;
+      padding: 14px 0;
+      width: 100%;
+      font-family: 'Inter', sans-serif;
+    }
+
+    .input-wrapper input[type="number"]::-webkit-inner-spin-button {
+      -webkit-appearance: none;
+      margin: 0;
+    }
+
+    .input-wrapper .currency {
+      color: #6b7b8f;
+      font-weight: 500;
+      font-size: 14px;
+      margin-left: 6px;
+    }
+
+    .input-hint {
+      font-size: 11px;
+      color: #6b7b8f;
+      margin-top: 2px;
+    }
+
+    .slider-container {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-top: 4px;
+    }
+
+    .slider-container input[type="range"] {
+      flex: 1;
+      -webkit-appearance: none;
+      background: #253141;
+      height: 4px;
+      border-radius: 4px;
+      outline: none;
+    }
+
+    .slider-container input[type="range"]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      width: 18px;
+      height: 18px;
+      background: #2962ff;
+      border-radius: 50%;
+      cursor: pointer;
+      box-shadow: 0 2px 8px rgba(41, 98, 255, 0.5);
+      border: 2px solid white;
+    }
+
+    .slider-label {
+      font-size: 12px;
+      color: #b0c4de;
+      font-weight: 600;
+      min-width: 40px;
+      text-align: right;
+    }
+
+    .order-summary {
+      display: flex;
+      justify-content: space-between;
+      font-size: 13px;
+      color: #8b9bb0;
+      border-top: 1px solid #1f2a37;
+      padding-top: 14px;
+      margin-top: 6px;
+    }
+
+    .order-summary .value {
+      color: white;
+      font-weight: 600;
+    }
+
+    .cta-button {
+      background: #2962ff;
+      border: none;
+      color: white;
+      font-weight: 600;
+      font-size: 15px;
+      padding: 16px;
+      border-radius: 14px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      font-family: 'Inter', sans-serif;
+      letter-spacing: -0.01em;
+      box-shadow: 0 10px 20px -8px rgba(41, 98, 255, 0.4);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+
+    .cta-button:hover {
+      background: #1e4bd8;
+      transform: translateY(-1px);
+      box-shadow: 0 14px 24px -8px rgba(41, 98, 255, 0.6);
+    }
+
+    .cta-button:active {
+      transform: translateY(0);
+    }
+
+    .cta-button.sell {
+      background: #f6465d;
+      box-shadow: 0 10px 20px -8px rgba(246, 70, 93, 0.4);
+    }
+
+    .cta-button.sell:hover {
+      background: #d93a4f;
+    }
+
+    /* watchlist */
+    .watchlist-card {
+      background: #131a24;
+      border-radius: 20px;
+      border: 1px solid #1f2a37;
+      overflow: hidden;
+      box-shadow: 0 6px 14px rgba(0, 0, 0, 0.3);
+    }
+
+    .watchlist-card .card-header {
+      padding: 16px 18px;
+    }
+
+    .watchlist-items {
+      padding: 4px 0 8px 0;
+    }
+
+    .watch-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 12px 18px;
+      border-bottom: 1px solid #1a2330;
+      cursor: pointer;
+      transition: background 0.1s;
+    }
+
+    .watch-item:last-child {
+      border-bottom: none;
+    }
+
+    .watch-item:hover {
+      background: #1a2330;
+    }
+
+    .watch-left {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .watch-icon {
+      width: 32px;
+      height: 32px;
+      background: #1e2a38;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 12px;
+      color: #b0c4de;
+    }
+
+    .watch-name {
+      font-weight: 600;
+      font-size: 14px;
+    }
+
+    .watch-name span {
+      display: block;
+      font-size: 11px;
+      font-weight: 400;
+      color: #6b7b8f;
+    }
+
+    .watch-right {
+      text-align: right;
+    }
+
+    .watch-price {
+      font-weight: 600;
+      font-size: 14px;
+    }
+
+    .watch-change {
+      font-size: 12px;
+      font-weight: 500;
+    }
+
+    .watch-change.up {
+      color: #34c77b;
+    }
+
+    .watch-change.down {
+      color: #f6465d;
+    }
+
+    /* toast */
+    .toast-message {
+      position: fixed;
+      bottom: 30px;
+      left: 50%;
+      transform: translateX(-50%) translateY(100px);
+      background: #1f2a37;
+      color: white;
+      padding: 12px 24px;
+      border-radius: 40px;
+      font-weight: 500;
+      font-size: 14px;
+      box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.8);
+      border: 1px solid #31465e;
+      opacity: 0;
+      transition: all 0.3s ease;
+      z-index: 999;
+      pointer-events: none;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .toast-message.show {
+      transform: translateX(-50%) translateY(0);
+      opacity: 1;
+    }
+
+    .toast-message i {
+      color: #34c77b;
+    }
+
+    /* responsive */
+    @media (max-width: 1000px) {
+      .main-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .search-bar {
+        width: 200px;
+      }
+
+      .header {
+        flex-wrap: wrap;
+        gap: 12px;
+      }
+    }
+
+    @media (max-width: 600px) {
+      .balance-chip .label {
+        display: none;
+      }
+
+      .search-bar {
+        width: 150px;
+      }
+
+      .chart-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 12px;
+      }
+
+      .market-stats {
+        gap: 12px;
+      }
+    }
+
+    /* scrollbar */
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+
+    ::-webkit-scrollbar-track {
+      background: #0b0e14;
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: #253141;
+      border-radius: 10px;
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+      background: #31465e;
+    }
+  </style>
+</head>
+<body>
+  <div class="app-container">
+    <!-- Header -->
+    <header class="header">
+      <div class="logo-area">
+        <div class="logo-icon">N</div>
+        <div class="logo-text">NovaTrade</div>
+      </div>
+      <div class="search-bar">
+        <i class="fas fa-search"></i>
+        <input type="text" placeholder="Search markets, pairs..." id="searchInput">
+      </div>
+      <div class="header-actions">
+        <div class="balance-chip">
+          <span class="label">Balance</span>
+          <span class="amount" id="balanceDisplay">$24,562.80 <small>+3.2%</small></span>
+        </div>
+        <div class="avatar">TTN</div>
+      </div>
+    </header>
+
+    <!-- Main Content -->
+    <div class="main-grid">
+      <!-- Left Panel -->
+      <div class="left-panel">
+        <!-- Chart Card -->
+        <div class="chart-card">
+          <div class="chart-header">
+            <div class="pair-info">
+              <div class="pair-icon">₿</div>
+              <div class="pair-name">BTC/USD <span>Bitcoin</span></div>
+            </div>
+            <div class="price-badge">
+              <span class="price" id="btcPrice">$63,842.50</span>
+              <span class="change" id="btcChange">+2.34%</span>
+            </div>
+            <div class="chart-tabs">
+              <button class="chart-tab active">1H</button>
+              <button class="chart-tab">4H</button>
+              <button class="chart-tab">1D</button>
+              <button class="chart-tab">1W</button>
+            </div>
+          </div>
+          <div class="chart-area">
+            <canvas id="chartCanvas" width="800" height="240"></canvas>
+          </div>
+          <div class="market-stats">
+            <div class="stat-item">
+              <span class="stat-label">24h High</span>
+              <span class="stat-value">$64,210.00</span>
+            </div>
+            <div class="stat-item">
+              <span class="stat-label">24h Low</span>
+              <span class="stat-value">$62,150.20</span>
+            </div>
+            <div class="stat-item">
+              <span class="stat-label">24h Volume</span>
+              <span class="stat-value">$1.82B</span>
+            </div>
+            <div class="stat-item">
+              <span class="stat-label">Market Cap</span>
+              <span class="stat-value">$1.26T</span>
+            </div>
+            <div class="stat-item">
+              <span class="stat-label">Funding Rate</span>
+              <span class="stat-value up">0.012%</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Positions Table -->
+        <div class="positions-card">
+          <div class="card-header">
+            <h3>Open Positions</h3>
+            <span class="badge">3 active</span>
+          </div>
+          <table class="positions-table">
+            <thead>
+              <tr>
+                <th>Pair</th>
+                <th>Side</th>
+                <th>Size</th>
+                <th>Entry</th>
+                <th>Mark</th>
+                <th>PnL</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody id="positionsBody">
+              <tr>
+                <td class="pair">BTC/USD</td>
+                <td class="long">Long</td>
+                <td>0.45 BTC</td>
+                <td>$62,400.00</td>
+                <td>$63,842.50</td>
+                <td class="pnl-up">+$648.92</td>
+                <td><button class="action-btn close-position">Close</button></td>
+              </tr>
+              <tr>
+                <td class="pair">ETH/USD</td>
+                <td class="long">Long</td>
+                <td>5.20 ETH</td>
+                <td>$3,420.10</td>
+                <td>$3,512.30</td>
+                <td class="pnl-up">+$479.42</td>
+                <td><button class="action-btn close-position">Close</button></td>
+              </tr>
+              <tr>
+                <td class="pair">SOL/USD</td>
+                <td class="short">Short</td>
+                <td>32.0 SOL</td>
+                <td>$142.80</td>
+                <td>$138.45</td>
+                <td class="pnl-up">+$139.20</td>
+                <td><button class="action-btn close-position">Close</button></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Right Panel -->
+      <div class="right-panel">
+        <!-- Order Form -->
+        <div class="order-card">
+          <div class="order-tabs">
+            <button class="order-tab active" id="buyTab">Buy / Long</button>
+            <button class="order-tab sell" id="sellTab">Sell / Short</button>
+          </div>
+          <form class="order-form" id="orderForm">
+            <div class="input-group">
+              <label>Price <span>Market</span></label>
+              <div class="input-wrapper">
+                <input type="text" value="63,842.50" readonly id="orderPrice">
+                <span class="currency">USD</span>
+              </div>
+            </div>
+            <div class="input-group">
+              <label>Amount <span id="availableBalance">Available: $24,562.80</span></label>
+              <div class="input-wrapper">
+                <input type="number" id="orderAmount" placeholder="0.00" step="0.01" min="0" value="0.50">
+                <span class="currency" id="amountCurrency">BTC</span>
+              </div>
+              <div class="input-hint">≈ $31,921.25</div>
+            </div>
+            <div class="input-group">
+              <label>Leverage <span id="leverageValue">5x</span></label>
+              <div class="slider-container">
+                <input type="range" id="leverageSlider" min="1" max="20" value="5" step="1">
+                <span class="slider-label" id="leverageLabel">5x</span>
+              </div>
+            </div>
+            <div class="order-summary">
+              <span>Est. Liquidation</span>
+              <span class="value" id="liquidationPrice">$51,074.00</span>
+            </div>
+            <div class="order-summary">
+              <span>Fee (0.05%)</span>
+              <span class="value" id="feeAmount">$15.96</span>
+            </div>
+            <button type="submit" class="cta-button" id="submitOrder">
+              <i class="fas fa-arrow-up"></i> Buy BTC
+            </button>
+          </form>
+        </div>
+
+        <!-- Watchlist -->
+        <div class="watchlist-card">
+          <div class="card-header">
+            <h3>Watchlist</h3>
+            <span class="badge">Live</span>
+          </div>
+          <div class="watchlist-items" id="watchlistItems">
+            <!-- populated by JS -->
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast -->
+  <div class="toast-message" id="toast">
+    <i class="fas fa-check-circle"></i>
+    <span id="toastText">Order placed successfully</span>
+  </div>
+
+  <script>
+    (function() {
+      // ---------- GLOBAL STATE ----------
+      const state = {
+        side: 'buy', // 'buy' or 'sell'
+        amount: 0.50,
+        leverage: 5,
+        btcPrice: 63842.50,
+        balance: 24562.80,
+        watchlist: [
+          { pair: 'ETH/USD', name: 'Ethereum', price: 3512.30, change: 1.87, icon: 'Ξ' },
+          { pair: 'SOL/USD', name: 'Solana', price: 138.45, change: -0.94, icon: '◎' },
+          { pair: 'XRP/USD', name: 'Ripple', price: 0.6241, change: 3.21, icon: '✕' },
+          { pair: 'ADA/USD', name: 'Cardano', price: 0.4823, change: -1.12, icon: '₳' },
+          { pair: 'DOGE/USD', name: 'Dogecoin', price: 0.1524, change: 5.43, icon: 'Ð' }
+        ]
+      };
+
+      // ---------- DOM REFS ----------
+      const buyTab = document.getElementById('buyTab');
+      const sellTab = document.getElementById('sellTab');
+      const submitOrder = document.getElementById('submitOrder');
+      const orderAmount = document.getElementById('orderAmount');
+      const leverageSlider = document.getElementById('leverageSlider');
+      const leverageLabel = document.getElementById('leverageLabel');
+      const leverageValue = document.getElementById('leverageValue');
+      const amountCurrency = document.getElementById('amountCurrency');
+      const orderPrice = document.getElementById('orderPrice');
+      const liquidationPrice = document.getElementById('liquidationPrice');
+      const feeAmount = document.getElementById('feeAmount');
+      const availableBalance = document.getElementById('availableBalance');
+      const balanceDisplay = document.getElementById('balanceDisplay');
+      const toast = document.getElementById('toast');
+      const toastText = document.getElementById('toastText');
+      const watchlistItems = document.getElementById('watchlistItems');
+      const searchInput = document.getElementById('searchInput');
+      
+      // ----------REAL REFS----------
+        const buyTab = document.getElementById('buyTab');
+      const sellTab = document.getElementById('sellTab');
+      const submitOrder = document.getElementById('submitOrder');
+      const orderAmount = document.getElementById('orderAmount');
+      const leverageSlider = document.getElementById('leverageSlider');
+      const leverageLabel = document.getElementById('leverageLabel');
+      const leverageValue = document.getElementById('leverageValue');
+      const amountCurrency = document.getElementById('amountCurrency');
+      const orderPrice = document.getElementById('orderPrice');
+      const liquidationPrice = document.getElementById('liquidationPrice');
+      const feeAmount = document.getElementById('feeAmount');
+      const availableBalance = document.getElementById('availableBalance');
+      const balanceDisplay = document.getElementById('balanceDisplay');
+      const toast = document.getElementById('toast');
+      const toastText = document.getElementById('toastText');
+      const watchlistItems = document.getElementById('watchlistItems');
+      const searchInput = document.getElementById('searchInput');
+
+      // ---------- HELPERS ----------
+      function formatMoney(value) {
+        return '$' + value.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+      }
+
+      function showToast(message, isSuccess = true) {
+        toastText.textContent = message;
+        toast.querySelector('i').className = isSuccess ? 'fas fa-check-circle' : 'fas fa-exclamation-circle';
+        toast.querySelector('i').style.color = isSuccess ? '#34c77b' : '#f6465d';
+        toast.classList.add('show');
+        clearTimeout(window.toastTimeout);
+        window.toastTimeout = setTimeout(() => {
+          toast.classList.remove('show');
+        }, 2800);
+      }
+
+      // update order summary based on current side, amount, leverage
+      function updateOrderSummary() {
+        const amt = parseFloat(orderAmount.value) || 0;
+        const price = state.btcPrice;
+        const lev = state.leverage;
+
+        // total value
+        const totalValue = amt * price;
+        // fee 0.05%
+        const fee = totalValue * 0.0005;
+        feeAmount.textContent = formatMoney(fee);
+
+        // liquidation price (simplified)
+        let liqPrice = 0;
+        if (state.side === 'buy') {
+          liqPrice = price * (1 - 1 / lev);
+        } else {
+          liqPrice = price * (1 + 1 / lev);
+        }
+        liquidationPrice.textContent = formatMoney(liqPrice);
+
+        // update button text
+        if (state.side === 'buy') {
+          submitOrder.innerHTML = `<i class="fas fa-arrow-up"></i> Buy BTC`;
+          submitOrder.classList.remove('sell');
+        } else {
+          submitOrder.innerHTML = `<i class="fas fa-arrow-down"></i> Sell BTC`;
+          submitOrder.classList.add('sell');
+        }
+
+        // update available balance display
+        availableBalance.textContent = `Available: ${formatMoney(state.balance)}`;
+        balanceDisplay.innerHTML = `${formatMoney(state.balance)} <small>+3.2%</small>`;
+      }
+
+      // update side tabs visual
+      function setSide(side) {
+        state.side = side;
+        if (side === 'buy') {
+          buyTab.classList.add('active');
+          sellTab.classList.remove('active');
+          submitOrder.classList.remove('sell');
+        } else {
+          sellTab.classList.add('active');
+          buyTab.classList.remove('active');
+          submitOrder.classList.add('sell');
+        }
+        updateOrderSummary();
+      }
+
+      // ---------- RENDER WATCHLIST ----------
+      function renderWatchlist() {
+        watchlistItems.addEventListener('click',(e)=>{
+          const item=e.target.closest('.watch-item');
+          if(item){
+            const pair=item.dataset.pair;
+            showToast('switch to ${pair}');
+        watchlistItems.innerHTML = state.watchlist.map(item => {
+          const changeClass = item.change >= 0 ? 'up' : 'down';
+          const changeSign = item.change >= 0 ? '+' : '';
+          return `
+            <div class="watch-item" data-pair="${item.pair}">
+              <div class="watch-left">
+                <div class="watch-icon">${item.icon}</div>
+                <div class="watch-name">${item.pair}<span>${item.name}</span></div>
+              </div>
+              <div class="watch-right">
+                <div class="watch-price">${formatMoney(item.price)}</div>
+                <div class="watch-change ${changeClass}">${changeSign}${item.change}%</div>
+              </div>
+            </div>
+          `;
+        }).join('');
+      }
+
+      // ---------- CHART DRAWING (realistic looking
